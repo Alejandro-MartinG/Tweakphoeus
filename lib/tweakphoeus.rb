@@ -1,4 +1,4 @@
-#require "tweakphoeus/version"
+require "tweakphoeus/version"
 require "typhoeus"
 
 module Tweakphoeus
