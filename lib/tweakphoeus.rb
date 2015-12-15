@@ -1,26 +1,27 @@
-require "tweakphoeus/version"
+#require "tweakphoeus/version"
 require "typhoeus"
 
 class Tweakphoeus
   attr_accessor :cookie_jar
 
   def initialize()
-      @cookie_jar = {}
+    @cookie_jar = {}
   end
 
-  def get url, body: nil, header: nil
-    inject_cookies url, header
-    response = Typhoeus.get url, body: body, headers: header
+  def get url, body: nil, headers: nil, redirect: true
+    inject_cookies url, headers
+    response = Typhoeus.get url, body: body, headers: headers
     obtain_cookies response
-    response = get(redirect_url(response), body, header) if has_redirect?(response)
+    response.headers
+    response = get(redirect_url(response), body: body, headers: headers) if redirect && has_redirect?(response)
     response
   end
 
-  def post url, body: nil, header: nil
-    inject_cookies url, header
-    response = Typhoeus.get url, body: body, headers: header
+  def post url, body: nil, headers: nil, redirect: false
+    inject_cookies url, headers
+    response = Typhoeus.get url, body: body, headers: headers
     obtain_cookies response
-    response = post(redirect_url(response), body, header) if has_redirect?(response)
+    response = post(redirect_url(response), body: body, headers: headers) if redirect && has_redirect?(response)
     response
   end
 
@@ -28,54 +29,62 @@ class Tweakphoeus
     #TODO
   end
 
+  def add_cookies host, key, value
+    domain = get_domain host
+    @cookie_jar[domain] = [] if @cookie_jar[domain].nil?
+    @cookie_jar[domain] << {key => value}
+  end
 
+  def get_domain domain
+    domain.match(/([a-zA-Z0-9]+:\/\/|)([^\/]+)/)[2]
+  end
 
   private
 
   def obtain_cookies response
     set_cookies_field = response.headers["Set-Cookie"]
-    if set_cookies_field.class == "String"
-      set_cookies_field = [set_cookies_field]
+    return if set_cookies_field.nil?
+    if set_cookies_field.is_a?(String)
+      set_cookies_field = [response.headers["Set-Cookie"]]
     end
 
     set_cookies_field.each do |cookie|
-      fields = cookie.split("; ")
-      puts fields.to_s
-      case fields.count
-      when 5
-        value, expire, path, domain, only = fields
-      when 4
-        value, path, domain, only = fields
+      key, value = cookie.match(/^([^=]+)=([^;]+)/).to_a[1..-1]
+      domain = cookie.match(/domain=([^;]+)/)
+
+      if domain.nil?
+        domain = get_domain response.request.url
       else
-        puts "Wtf?!"
-        raise StandardException("bad number of cookie fields")
+        domain = domain[1]
       end
-      key, value = value.split("=")
-      domain = domain.split("=").last
-      @cookie_jar = {} if @cookie_jar.nil? #TODO remove after debug
+
+      @cookie_jar = {} if @cookie_jar.nil? #TODO: remove after debug
       @cookie_jar[domain] = [] if @cookie_jar[domain].nil?
       @cookie_jar[domain] << {key => value}
     end
   end
 
   def inject_cookies url, headers
-    url = url.gsub("www.","").split("/")
+    domain = get_domain url
+    domain = domain.gsub("www.","")
     headers = {} if headers.nil?
     cookies = []
-    while url.split(".").count > 1
-       cookies << @cookie_jar[url] if @cookie_jar[url]
-       cookies << @cookie_jar["." + url] if @cookie_jar["." + url]
-       url = url.split(".")[1..-1].join(".")
+
+    while domain.split(".").count > 1
+      cookies << @cookie_jar[domain] if @cookie_jar[domain]
+      cookies << @cookie_jar["." + domain] if @cookie_jar["." + domain]
+      domain = domain.split(".")[1..-1].join(".")
     end
 
     headers["Set-Cookie"] = cookies.flatten
   end
 
   def has_redirect? response
-    redirect_url(response).nil?
+    !redirect_url(response).nil?
   end
 
   def redirect_url response
     response.headers["Location"]
   end
+
 end
