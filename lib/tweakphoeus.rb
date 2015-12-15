@@ -1,7 +1,7 @@
 #require "tweakphoeus/version"
 require "typhoeus"
 
-class Tweakphoeus
+module Tweakphoeus
   attr_accessor :cookie_jar
 
   def initialize()
