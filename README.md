@@ -1,4 +1,5 @@
 [![Stories in Ready](https://badge.waffle.io/basestylo/Tweakphoeus.png?label=ready&title=Ready)](https://waffle.io/basestylo/Tweakphoeus)
+[![Gem Version](https://badge.fury.io/rb/tweakphoeus.svg)](https://badge.fury.io/rb/tweakphoeus)
 [![Circle CI](https://circleci.com/gh/basestylo/Tweakphoeus/tree/master.svg?style=svg)](https://circleci.com/gh/basestylo/Tweakphoeus/tree/master)
 [![Code Climate](https://codeclimate.com/github/basestylo/Tweakphoeus/badges/gpa.svg)](https://codeclimate.com/github/basestylo/Tweakphoeus)
 [![Issue Count](https://codeclimate.com/github/basestylo/Tweakphoeus/badges/issue_count.svg)](https://codeclimate.com/github/basestylo/Tweakphoeus)
