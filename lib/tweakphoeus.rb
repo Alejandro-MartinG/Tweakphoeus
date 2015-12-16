@@ -9,6 +9,10 @@ module Tweakphoeus
       @cookie_jar = {}
     end
 
+    def imp #TODO: debugged method
+      @cookie_jar
+    end
+
     def get url, body: nil, headers: nil, redirect: true
       inject_cookies url, headers
       response = Typhoeus.get url, body: body, headers: headers
