@@ -13,14 +13,13 @@ module Tweakphoeus
       inject_cookies url, headers
       response = Typhoeus.get url, body: body, headers: headers
       obtain_cookies response
-      response.headers
       response = get(redirect_url(response), body: body, headers: headers) if redirect && has_redirect?(response)
       response
     end
 
     def post url, body: nil, headers: nil, redirect: false
       inject_cookies url, headers
-      response = Typhoeus.get url, body: body, headers: headers
+      response = Typhoeus.post url, body: body, headers: headers
       obtain_cookies response
       response = post(redirect_url(response), body: body, headers: headers) if redirect && has_redirect?(response)
       response
@@ -59,7 +58,6 @@ module Tweakphoeus
           domain = domain[1]
         end
 
-        @cookie_jar = {} if @cookie_jar.nil? #TODO: remove after debug
         @cookie_jar[domain] = [] if @cookie_jar[domain].nil?
         @cookie_jar[domain] << {key => value}
       end
@@ -77,7 +75,7 @@ module Tweakphoeus
         domain = domain.split(".")[1..-1].join(".")
       end
 
-      headers["Set-Cookie"] = cookies.flatten
+      headers["Cookie"] = cookies.flatten
     end
 
     def has_redirect? response
