@@ -54,7 +54,7 @@ module Tweakphoeus
 
       set_cookies_field.each do |cookie|
         key, value = cookie.match(/^([^=]+)=([^;]+)/).to_a[1..-1]
-        domain = cookie.match(/domain=([^;]+)/)
+        domain = cookie.match(/Domain=([^;]+)/)
 
         if domain.nil?
           domain = get_domain response.request.url
