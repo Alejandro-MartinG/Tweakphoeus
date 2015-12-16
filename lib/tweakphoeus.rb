@@ -65,7 +65,6 @@ module Tweakphoeus
 
     def inject_cookies url, headers
       domain = get_domain url
-      domain = domain.gsub("www.","")
       headers = {} if headers.nil?
       cookies = []
 
