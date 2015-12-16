@@ -19,7 +19,7 @@ module Tweakphoeus
 
     def post url, body: nil, headers: nil, redirect: false
       inject_cookies url, headers
-      response = Typhoeus.get url, body: body, headers: headers
+      response = Typhoeus.post url, body: body, headers: headers
       obtain_cookies response
       response = post(redirect_url(response), body: body, headers: headers) if redirect && has_redirect?(response)
       response
