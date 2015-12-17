@@ -83,6 +83,7 @@ module Tweakphoeus
         domain = domain.split(".")[1..-1].join(".")
       end
 
+      cookies.map{|hash| hash.map{|k,v| k + "=" + v}}.flatten.join('; ')
       headers["Cookie"] = cookies
     end
 
