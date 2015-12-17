@@ -64,7 +64,6 @@ module Tweakphoeus
         end
 
         @cookie_jar[domain] = [] if @cookie_jar[domain].nil?
-        @cookie_jar[domain] = @cookie_jar[domain].reject{|hash| hash.first[0]==key}
         @cookie_jar[domain] << {key => value}
       end
     end
