@@ -54,7 +54,7 @@ module Tweakphoeus
 
       set_cookies_field.each do |cookie|
         key, value = cookie.match(/^([^=]+)=([^;]+)/).to_a[1..-1]
-        domain = cookie.match(/Domain=([^;]+)/)
+        domain = cookie.match(/Domain=\.([^;]+)/)
 
         if domain.nil?
           domain = get_domain response.request.url
@@ -73,12 +73,17 @@ module Tweakphoeus
       cookies = []
 
       while domain.split(".").count > 1
-        cookies << @cookie_jar[domain] if @cookie_jar[domain]
-        cookies << @cookie_jar["." + domain] if @cookie_jar["." + domain]
+        if @cookie_jar[domain]
+          @cookie_jar[domain].each do |cookie|
+            if !cookie.in?(cookies.map{|k,v| k})
+              cookies << cookie
+            end
+          end
+        end
         domain = domain.split(".")[1..-1].join(".")
       end
 
-      headers["Cookie"] = cookies.flatten
+      headers["Cookie"] = cookies
     end
 
     def has_redirect? response
@@ -87,6 +92,10 @@ module Tweakphoeus
 
     def redirect_url response
       response.headers["Location"]
+    end
+
+    def purge_bad_cookies cookies
+      cookies.reject{|e| e.first.last=="\"\""}
     end
   end
 end
