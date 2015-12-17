@@ -53,7 +53,7 @@ module Tweakphoeus
       end
 
       set_cookies_field.each do |cookie|
-        key, value = cookie.match(/^([^=]+)=([^;]+)/).to_a[1..-1]
+        key, value = cookie.match(/^([^=]+)=(.+)/).to_a[1..-1]
         domain = cookie.match(/Domain=\.([^;]+)/)
 
         if domain.nil?
