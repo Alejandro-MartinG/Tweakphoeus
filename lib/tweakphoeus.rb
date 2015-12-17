@@ -36,6 +36,7 @@ module Tweakphoeus
     def add_cookies host, key, value
       domain = get_domain host
       @cookie_jar[domain] = [] if @cookie_jar[domain].nil?
+      @cookie_jar[domain] = @cookie_jar[domain].reject{|hash| hash.first[0]==key}
       @cookie_jar[domain] << {key => value}
     end
 
@@ -63,6 +64,7 @@ module Tweakphoeus
         end
 
         @cookie_jar[domain] = [] if @cookie_jar[domain].nil?
+        @cookie_jar[domain] = @cookie_jar[domain].reject{|hash| hash.first[0]==key}
         @cookie_jar[domain] << {key => value}
       end
     end
